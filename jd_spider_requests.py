@@ -277,7 +277,7 @@ class JdSeckill(object):
 
         # 初始化信息
         self.sku_id = global_config.getRaw('config', 'sku_id')
-        self.seckill_num = 2
+        self.seckill_num = 1
         self.seckill_init_info = dict()
         self.seckill_url = dict()
         self.seckill_order_data = dict()
@@ -331,7 +331,7 @@ class JdSeckill(object):
         self._seckill()
 
     @check_login
-    def seckill_by_proc_pool(self, work_count=5):
+    def seckill_by_proc_pool(self, work_count=2):
         """
         多进程进行抢购
         work_count：进程数量
@@ -360,6 +360,7 @@ class JdSeckill(object):
             try:
                 self.request_seckill_url()
                 while True:
+                    logger.info('抢购loop 继续')
                     self.request_seckill_checkout_page()
                     self.submit_seckill_order()
             except Exception as e:
@@ -382,6 +383,7 @@ class JdSeckill(object):
         resp = self.session.get(url=url, params=payload, headers=headers)
         resp_json = parse_json(resp.text)
         reserve_url = resp_json.get('url')
+        logger.info('预约url:%s',reserve_url)
         self.timers.start()
         while True:
             try:
